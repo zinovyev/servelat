@@ -10,5 +10,7 @@ namespace servelat;
  */
 class Application
 {
+    protected $resolver;
 
+    protected $container;
 }
