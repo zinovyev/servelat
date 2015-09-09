@@ -1,10 +1,11 @@
 <?php
 
-namespace servelat\exceptions;
+
+namespace servelat\base\exceptions;
 
 /**
  * Exception ServelatException.
- * Base type of the servelat project exception.
+ * Base servelat exception.
  *
  * @author Ivan Zinovyev <vanyazin@gmail.com>
  */
