@@ -145,17 +145,6 @@ abstract class AbstractApplication implements  ServiceInterface
     }
 
     /**
-     * Get the array of values that customizes the provider.
-     * These parameters will be registered in the global space of the container.
-     *
-     * @return array
-     */
-    public function getGlobals()
-    {
-        return [];
-    }
-
-    /**
      * Registers services on the given container.
      *
      * This method should only be used to configure services and parameters.
@@ -170,4 +159,12 @@ abstract class AbstractApplication implements  ServiceInterface
             return $self;
         };
     }
+
+    /**
+     * Get the array of values that customizes the provider.
+     * These parameters will be registered in the global space of the container.
+     *
+     * @return array
+     */
+    abstract public function getGlobals();
 }
