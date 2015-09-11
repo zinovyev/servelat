@@ -22,6 +22,7 @@ class ApplicationTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->app = new Application();
+        $this->app->configure();
     }
 
     public function testContainerContainsServices()
@@ -32,10 +33,11 @@ class ApplicationTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('app', $this->app->container->keys()[0]);
     }
 
-    /**
-     */
-    public function testTryToRegisterRegisteredService()
+    public function testApplicationParameters()
     {
-        $this->app->container['app']->registerService($this->app);
+        $this->assertFileExists($this->app->parameters['bin_file']);
+        $this->assertFileExists($this->app->parameters['vendor_dir']);
+        $this->assertFileExists($this->app->parameters['base_dir']);
+        $this->assertFileExists($this->app->parameters['application_dir']);
     }
 }

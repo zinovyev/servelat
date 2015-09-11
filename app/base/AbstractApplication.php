@@ -67,7 +67,10 @@ abstract class AbstractApplication implements  ServiceInterface
     public function __construct(array $parameters = [])
     {
         $this->registerService($this);
-        $this->configure($parameters);
+
+        if ([] !== $parameters) {
+            $this->configure($parameters);
+        }
     }
 
     /**
@@ -100,9 +103,9 @@ abstract class AbstractApplication implements  ServiceInterface
      * @param bool $reload
      * @return $this
      */
-    public function configure(array $parameters, $reload = false)
+    public function configure(array $parameters = [], $reload = false)
     {
-        if ((false === $this->configured || true === $reload) && [] !== $parameters) {
+        if (false === $this->configured || true === $reload) {
             // Configure every single service
             $resolver = $this->getResolver($reload);
             foreach ($this->services as $service) {
