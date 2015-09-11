@@ -4,9 +4,13 @@
 namespace servelat\base;
 
 use Pimple\Container;
-use servelat\base\exceptions\ApplicationConfigurationException;
-use servelat\base\exceptions\ServiceNotFoundException;
-use servelat\base\exceptions\ServiceOverrideException;
+use servelat\base\events\ApplicationConfigureEvent;
+use servelat\base\events\ConfigureApplicationEvent;
+use servelat\base\exceptions\BadConfigurationException;
+use servelat\base\exceptions\UnknownPropertyException;
+use servelat\ServelatEvents;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Class Application.
@@ -17,131 +21,172 @@ use servelat\base\exceptions\ServiceOverrideException;
 abstract class AbstractApplication implements  ServiceInterface
 {
     /**
-     * @const Id for basic application service
+     * Applciation Id
+     *
+     * @const string
      */
-    const APPLICATION_SERVICE_ID = 'app';
+    const APPLICATION_ID = 'app';
 
     /**
      * @var \Pimple\Container
      */
-    protected $container;
+    protected $containerInstance;
 
     /**
-     * Do not override parent::__contruct() method!
+     * @var \Symfony\Component\EventDispatcher\EventDispatcher
      */
-    public function __construct()
+    protected $dispatcherInstance;
+
+    /**
+     * @var \Symfony\Component\OptionsResolver\OptionsResolver
+     */
+    protected $resolverInstance;
+
+    /**
+     * @var \ArrayObject
+     */
+    protected $parametersStorage;
+
+    /**
+     * @var ServiceInterface[]
+     */
+    protected $services;
+
+    /**
+     * @var boolean
+     */
+    protected $configured = false;
+
+    /**
+     * @param array $parameters
+     */
+    public function __construct(array $parameters = [])
     {
-        // Self register the application
-        $this->getContainer()->register($this);
+        $this->configure($parameters);
     }
 
     /**
-     * Check if the given service or property is defined.
-     *
-     * @param string $id The unique identifier for the parameter or object
-     * @return bool
+     * @param $property
+     * @return \ArrayObject|Container|EventDispatcher
+     * @throws BadConfigurationException
+     * @throws UnknownPropertyException
      */
-    public function has($id)
+    public function __get($property)
     {
-        return isset($this->container[$id]);
-    }
-
-    /**
-     * Get service or property by id.
-     *
-     * @param string $id The unique identifier for the parameter or object
-     * @return mixed
-     * @throws ServiceNotFoundException
-     */
-    public function get($id)
-    {
-        try {
-            return $this->container[$id];
-        } catch (\InvalidArgumentException $ex) {
-            throw new ServiceNotFoundException(sprintf(
-                'Service or property named %s was not found for. %s',
-                $id,
-                $ex->getMessage()
-            ), $ex->getCode(), $ex);
+        if ($property === 'container') {
+            return $this->getContainer();
+        } elseif ($property === 'parameters') {
+            return $this->getParameters();
+        } elseif ($property === 'dispatcher') {
+            return $this->getDispatcher();
+        } else {
+            throw new UnknownPropertyException(sprintf(
+                'Property %s is unknown.',
+                $property
+            ));
         }
     }
 
     /**
-     * Show registered services ids.
+     * Configure application.
+     * Resolve application parameters.
      *
-     * @return array
-     */
-    public function show()
-    {
-        return $this->container->keys();
-    }
-
-    /**
-     * Register single service in the di container.
-     *
-     * @param ServiceInterface $service
+     * @param array $parameters
+     * @param bool $reload
      * @return $this
-     * @throws ApplicationConfigurationException
-     * @throws ServiceOverrideException
      */
-    public function registerService(ServiceInterface $service)
+    public function configure(array $parameters, $reload = false)
     {
-        $globals = $service->getGlobals();
-        if (null === $globals || !is_array($globals)) {
-            throw new ApplicationConfigurationException(
-                'The value returned by the ServiceInterface::getGlobals() method must be of type array only.'
-            );
-        }
+        if ((false === $this->configured || true === $reload) && [] !== $parameters) {
+            // Configure every single service
+            $resolver = $this->getResolver($reload);
+            foreach ($this->services as $service) {
+                $service->configureParameters($resolver);
+            }
+            $resolvedParameters = $resolver->resolve($parameters);
+            $this->parametersStorage = new \ArrayObject($resolvedParameters);
 
-        try {
-            $this->getContainer()->register(
-                $service,
-                $service->getGlobals()
-            );
-        } catch (\RuntimeException $ex) {
-            throw new ServiceOverrideException(sprintf(
-                'Duplicate service id. %s',
-                $ex->getMessage()
-            ), $ex->getCode(), $ex);
+            // Dispatch an event
+            $event = new ApplicationConfigureEvent($resolver);
+            $this->getDispatcher()->dispatch(ServelatEvents::APPLICATION_CONFIGURE, $event);
+
+            $this->configured = true;
         }
 
         return $this;
     }
 
     /**
-     * Register a scope of services in the di container.
-     *
-     * @param ServiceInterface[] $services
-     * @return $this
-     * @throws ApplicationConfigurationException
+     * @return \ArrayObject
+     * @throws BadConfigurationException
      */
-    public function registerServices(array $services)
+    public function getParameters()
+    {
+        if (null === $this->parametersStorage) {
+            throw new BadConfigurationException('Application is not yet configured.');
+        }
+
+        return $this->parametersStorage;
+    }
+
+    /**
+     * @param boolean $reload
+     * @return Container
+     */
+    public function getContainer($reload = false)
+    {
+        if (null === $this->containerInstance || true === $reload) {
+            $this->containerInstance = new Container();
+        }
+
+        return $this->containerInstance;
+    }
+
+    /**
+     * @param bool $reload
+     * @return EventDispatcher
+     */
+    public function getDispatcher($reload = false)
+    {
+        if (null === $this->dispatcherInstance || true !== $reload) {
+            $this->dispatcherInstance = new EventDispatcher();
+        }
+
+        return $this->dispatcherInstance;
+    }
+
+    /**
+     * Register new service.
+     *
+     * @param ServiceInterface $service
+     * @return $this
+     */
+    public function registerService(ServiceInterface $service)
+    {
+        $this->services[] =  $service;
+        $this->getContainer()->register($service);
+
+        return $this;
+    }
+
+    /**
+     * Register a scope of services.
+     *
+     * @param array $services
+     * @return $this
+     * @throws BadConfigurationException
+     */
+    public function registerServices(array $services = [])
     {
         foreach ($services as $service) {
             if (!($service instanceof ServiceInterface)) {
-                throw new ApplicationConfigurationException('Can not register service. Service must implement ServiceInterface.');
+                throw new BadConfigurationException('Service must be an instance of \servelat\base\ServiceInterface');
             }
 
-            // Register service in the container
             $this->registerService($service);
         }
 
         return $this;
-    }
-
-    /**
-     * Get the container instance.
-     *
-     * @param bool|false $reload
-     * @return Container
-     */
-    protected function getContainer($reload = false)
-    {
-        if (null === $this->container || $reload) {
-            $this->container = new Container();
-        }
-
-        return $this->container;
     }
 
     /**
@@ -154,17 +199,44 @@ abstract class AbstractApplication implements  ServiceInterface
      */
     public function register(Container $pimple)
     {
-        $self = $this;
-        $pimple[self::APPLICATION_SERVICE_ID] = function () use ($self) {
-            return $self;
-        };
+        $pimple[self::APPLICATION_ID] = $this;
     }
 
     /**
-     * Get the array of values that customizes the provider.
-     * These parameters will be registered in the global space of the container.
-     *
-     * @return array
+     * @param bool|false $reload
+     * @return OptionsResolver
      */
-    abstract public function getGlobals();
+    protected function getResolver($reload = false)
+    {
+        if (null === $this->resolverInstance || true === $reload) {
+            $this->resolverInstance = new OptionsResolver();
+        }
+
+        return $this->resolverInstance;
+    }
+
+    /**
+     * Returns an array of event names this subscriber wants to listen to.
+     *
+     * The array keys are event names and the value can be:
+     *
+     *  * The method name to call (priority defaults to 0)
+     *  * An array composed of the method name to call and the priority
+     *  * An array of arrays composed of the method names to call and respective
+     *    priorities, or 0 if unset
+     *
+     * For instance:
+     *
+     *  * array('eventName' => 'methodName')
+     *  * array('eventName' => array('methodName', $priority))
+     *  * array('eventName' => array(array('methodName1', $priority), array('methodName2'))
+     *
+     * @return array The event names to listen to
+     *
+     * @api
+     */
+    public static function getSubscribedEvents()
+    {
+        return [];
+    }
 }

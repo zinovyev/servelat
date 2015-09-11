@@ -5,6 +5,8 @@ namespace servelat;
 
 use servelat\base\AbstractApplication;
 use servelat\base\exceptions\ApplicationConfigurationException;
+use servelat\base\exceptions\UnknownPropertyException;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Class Application.
@@ -15,54 +17,34 @@ use servelat\base\exceptions\ApplicationConfigurationException;
 class Application extends AbstractApplication
 {
     /**
-     * @const Application version
+     * @param array $parameters
      */
-    const VERSION = '0.01';
+    public function __construct(array $parameters = [])
+    {
+        parent::__construct($parameters);
+        $this->configureServices();
+    }
+
 
     /**
-     * @const Servelat bin file name
+     * Configure application parameters.
+     * All parameters will be accessible via \servelat\Applciation::parameters or \servelat\Applciation::getParameters().
+     *
+     * @see http://symfony.com/doc/current/components/options_resolver.html
+     * @param OptionsResolver $resolver
      */
-    const BIN_FILE = 'servelat.php';
-
-    protected static $vendorDir;
-
-    protected static $applciationDir;
-
-    protected static $binDir;
-
-    protected static $binFile;
-
-    public function __construct()
+    public function configureParameters(OptionsResolver $resolver)
     {
-        parent::__construct();
-        $this->registerBaseServices();
+        // TODO: Implement configureParameters() method.
     }
 
     /**
-     * Get the array of values that customizes the provider.
-     * These parameters will be registered in the global space of the container.
+     * Configure built in default services.
      *
-     * @return array
+     * @return $this
+     * @throws base\exceptions\BadConfigurationException
      */
-    public function getGlobals()
-    {
-        return [
-            'version'           => self::VERSION,
-            'vendor_dir'        => $this->getVendorDir(),
-            'base_dir'          => realpath(__DIR__ . '/..'),
-            'application_dir'   => $this->getApplicationDir(),
-            'runtime_dir'       => '/tmp',
-            'bin_dir'           => $this->getBinDir(),
-            'bin_file'          => $this->getBinFile(),
-        ];
-    }
-
-    /**
-     * Register base services.
-     *
-     * @throws base\exceptions\ApplicationConfigurationException
-     */
-    public function registerBaseServices()
+    protected function configureServices()
     {
         $this->registerServices([
 
@@ -70,86 +52,4 @@ class Application extends AbstractApplication
 
         return $this;
     }
-
-    /**
-     * Get the vendor dir path.
-     *
-     * @return string
-     * @throws ApplicationConfigurationException
-     */
-    public function getVendorDir()
-    {
-        if (null === self::$vendorDir) {
-            if (
-                getenv('COMPOSER_VENDOR_DIR')
-                && is_dir(__DIR__ . '/../' . getenv('COMPOSER_VENDOR_DIR'))
-            ) {
-                self::$vendorDir = realpath(__DIR__ . '/../' . getenv('COMPOSER_VENDOR_DIR'));
-            } elseif (is_dir(__DIR__ . '/../vendor')) {
-                self::$vendorDir = realpath(__DIR__ . '/../vendor');
-            } elseif (is_dir(__DIR__ . '/../../../')) {
-                self::$vendorDir = realpath(__DIR__ . '/../../../');
-            } else {
-                throw new ApplicationConfigurationException(
-                    'Could not find the vendor directory.'
-                );
-            }
-        }
-
-        return self::$vendorDir;
-
-    }
-
-    public function getApplicationDir()
-    {
-
-    }
-
-    /**
-     * Get the bin dir path.
-     *
-     * @return string
-     * @throws ApplicationConfigurationException
-     */
-    public function getBinDir()
-    {
-        if (null === self::$binDir ) {
-            if (
-                getenv('COMPOSER_BIN_DIR')
-                && is_dir($this->getVendorDir() . '/' . getenv('COMPOSER_BIN_DIR'))
-            ) {
-                self::$binDir = realpath($this->getVendorDir() . '/' . getenv('COMPOSER_BIN_DIR'));
-            } elseif (is_dir($this->getVendorDir() . '/bin')) {
-                self::$binDir = realpath($this->getVendorDir() . '/bin');
-            } else {
-                throw new ApplicationConfigurationException(
-                    'Could not find the bin directory.'
-                );
-            }
-        }
-
-        return self::$binDir;
-    }
-
-    /**
-     * Get the bin file.
-     *
-     * @return string
-     * @throws ApplicationConfigurationException
-     */
-    public function getBinFile()
-    {
-        if (null !== self::$binFile) {
-            return self::$binFile;
-        } elseif (is_file($this->getBinDir() . '/' . self::BIN_FILE)) {
-            self::$binFile = realpath($this->getBinDir() . '/' . self::BIN_FILE);
-        } else {
-            throw new ApplicationConfigurationException(
-                'Servelat binary not found.'
-            );
-        }
-
-        return self::$binFile;
-    }
-
 }

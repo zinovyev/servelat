@@ -4,6 +4,8 @@
 namespace servelat\base;
 
 use Pimple\ServiceProviderInterface;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * Interface ComponentInterface.
@@ -11,13 +13,14 @@ use Pimple\ServiceProviderInterface;
  *
  * @author Ivan Zinovyev <vanyazin@gmail.com>
  */
-interface ServiceInterface extends ServiceProviderInterface
+interface ServiceInterface extends ServiceProviderInterface, EventSubscriberInterface
 {
     /**
-     * Get the array of values that customizes the provider.
-     * These parameters will be registered in the global space of the container.
+     * Configure application parameters.
+     * All parameters will be accessible via \servelat\Applciation::parameters or \servelat\Applciation::getParameters().
      *
-     * @return array
+     * @see http://symfony.com/doc/current/components/options_resolver.html
+     * @param OptionsResolver $resolver
      */
-    public function getGlobals();
+    public function configureParameters(OptionsResolver $resolver);
 }
