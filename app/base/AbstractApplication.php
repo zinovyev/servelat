@@ -16,6 +16,10 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  * Class Application.
  * Base servelat application.
  *
+ * @property \Pimple\Container $container
+ * @property \ArrayObject $parameters
+ * @property \Symfony\Component\EventDispatcher\EventDispatcher $dispatcher
+ *
  * @author Ivan Zinovyev <vanyazin@gmail.com>
  */
 abstract class AbstractApplication implements  ServiceInterface
@@ -62,6 +66,7 @@ abstract class AbstractApplication implements  ServiceInterface
      */
     public function __construct(array $parameters = [])
     {
+        $this->registerService($this);
         $this->configure($parameters);
     }
 
@@ -202,18 +207,6 @@ abstract class AbstractApplication implements  ServiceInterface
         $pimple[self::APPLICATION_ID] = $this;
     }
 
-    /**
-     * @param bool|false $reload
-     * @return OptionsResolver
-     */
-    protected function getResolver($reload = false)
-    {
-        if (null === $this->resolverInstance || true === $reload) {
-            $this->resolverInstance = new OptionsResolver();
-        }
-
-        return $this->resolverInstance;
-    }
 
     /**
      * Returns an array of event names this subscriber wants to listen to.
@@ -238,5 +231,18 @@ abstract class AbstractApplication implements  ServiceInterface
     public static function getSubscribedEvents()
     {
         return [];
+    }
+
+    /**
+     * @param bool|false $reload
+     * @return OptionsResolver
+     */
+    protected function getResolver($reload = false)
+    {
+        if (null === $this->resolverInstance || true === $reload) {
+            $this->resolverInstance = new OptionsResolver();
+        }
+
+        return $this->resolverInstance;
     }
 }

@@ -26,18 +26,16 @@ class ApplicationTest extends \PHPUnit_Framework_TestCase
 
     public function testContainerContainsServices()
     {
-        $this->assertInstanceOf('\servelat\Application', $this->app->get('app'));
-        $this->assertTrue($this->app->has('app'));
-        $this->assertFalse($this->app->has('foo'));
-        var_dump($this->app->show());
-        $this->assertEquals('app', $this->app->show()[0]);
+        $this->assertInstanceOf('\servelat\Application', $this->app->container['app']);
+        $this->assertTrue(isset($this->app->container['app']));
+        $this->assertFalse(isset($this->app->container['foo']));
+        $this->assertEquals('app', $this->app->container->keys()[0]);
     }
 
     /**
-     * @expectedException \servelat\base\exceptions\ServiceOverrideException
      */
     public function testTryToRegisterRegisteredService()
     {
-        $this->app->get('app')->registerService($this->app);
+        $this->app->container['app']->registerService($this->app);
     }
 }
