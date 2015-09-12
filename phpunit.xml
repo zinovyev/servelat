@@ -1,16 +1,14 @@
-<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/4.5/phpunit.xsd" colors="true" convertErrorsToExceptions="true" convertNoticesToExceptions="true" convertWarningsToExceptions="true" verbose="true">
-    <phpunit bootstrap="tests/bootstrap/bootstrap.php">
-        <testsuites>
-            <testsuite name="servelat-unit">
-                <directory>unit</directory>
-            </testsuite>
-        </testsuites>
-        <testsuites>
-            <testsuite name="servelat-integration">
-                <directory>integration</directory>
-            </testsuite>
-        </testsuites>
-    </phpunit>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/4.5/phpunit.xsd" colors="true" convertErrorsToExceptions="true" convertNoticesToExceptions="true" convertWarningsToExceptions="true" verbose="true" bootstrap="tests/bootstrap/bootstrap.php">
+    <testsuites>
+        <testsuite name="servelat-unit">
+            <directory>tests/unit</directory>
+        </testsuite>
+    </testsuites>
+    <testsuites>
+        <testsuite name="servelat-integration">
+            <directory>tests/integration</directory>
+        </testsuite>
+    </testsuites>
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="true">
             <directory suffix=".php">app</directory>
