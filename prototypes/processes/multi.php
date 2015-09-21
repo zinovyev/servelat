@@ -75,6 +75,7 @@ foreach ($cmds as $key => $cmd) {
 
 // Run system select to get process output
 //
+$processOutputs = [];
 while (count($processCollection)) {
     $readStreams = $closedProcesses = $failedProcesses = [];
     $writeStreams = $errStreams = null;
@@ -94,7 +95,9 @@ while (count($processCollection)) {
 
                 $line = fgets($readStream);
                 if (false !== $line) {
+                    $processKey = $getProcessKey($readStream, $streamCollection);
                     $line = trim ($line);
+                    $processOutputs[$processKey][] = $line;
                     if (null !== $processKey = $getFailedProcessKey($readStream, $streamCollection)) {
                         $failedProcesses[$processKey] = 1;
                         $closedProcesses[] = $processKey;
@@ -129,9 +132,10 @@ while (count($processCollection)) {
         if (isset($processCollection[$processKey])) {
             if (is_resource($processCollection[$processKey])) {
                 printf(
-                    "Process %s exited with status %s\n",
+                    "Process %s exited with status [%s]: %s\n",
                     $processKey,
-                    isset($failedProcesses[$processKey]) ? 1 : 0
+                    isset($failedProcesses[$processKey]) ? 1 : 0,
+                    implode('', $processOutputs[$processKey])
                 );
                 proc_close($processCollection[$processKey]);
             }
