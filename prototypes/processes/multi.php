@@ -19,6 +19,7 @@ $buildCommand = function ($cmd) {
     );
 };
 
+// Get process key by stream
 $getProcessKey = function ($stream, array $streamCollection)
 {
     if (
@@ -36,8 +37,16 @@ $getProcessKey = function ($stream, array $streamCollection)
     return null;
 };
 
+// Error or success (1 for stdout, 2 for stderr)
+//
+$getFailedProcessKey = function ($stream, array $streamCollection) use ($getProcessKey) {
+    $processKey = $getProcessKey($stream, $streamCollection);
+    return 2 == array_search($stream, $streamCollection[$processKey]) ? $processKey : null;
+};
+
 // Commands
 $cmds = [
+    "echo 'foo\n';sleep(1); echo 'bar\n;",
     "echo 'foo\n';sleep(1); echo 'bar\n';",
     "sleep(1); echo '33\n'; sleep(1); echo 33.5, PHP_EOL;\n",
     "sleep(2); echo 34, PHP_EOL;\n",
@@ -67,7 +76,7 @@ foreach ($cmds as $key => $cmd) {
 // Run system select to get process output
 //
 while (count($processCollection)) {
-    $readStreams = $closedProcesses = [];
+    $readStreams = $closedProcesses = $failedProcesses = [];
     $writeStreams = $errStreams = null;
     foreach ($streamCollection as $streamSuiteKey => $streamSuite) {
         $streamIn = $streamSuite[0];
@@ -86,7 +95,10 @@ while (count($processCollection)) {
                 $line = fgets($readStream);
                 if (false !== $line) {
                     $line = trim ($line);
-                    var_dump($line);
+                    if (null !== $processKey = $getFailedProcessKey($readStream, $streamCollection)) {
+                        $failedProcesses[$processKey] = 1;
+                        $closedProcesses[] = $processKey;
+                    }
                 } else {
                     $processKey = $getProcessKey($readStream, $streamCollection);
                     $closedProcesses[] = $processKey;
@@ -116,6 +128,11 @@ while (count($processCollection)) {
         // Close process
         if (isset($processCollection[$processKey])) {
             if (is_resource($processCollection[$processKey])) {
+                printf(
+                    "Process %s exited with status %s\n",
+                    $processKey,
+                    isset($failedProcesses[$processKey]) ? 1 : 0
+                );
                 proc_close($processCollection[$processKey]);
             }
             unset($processCollection[$processKey]);
