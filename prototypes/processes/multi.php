@@ -10,10 +10,12 @@
  *
  */
 
+$start = time();
+
 // Function for building php commands
 $buildCommand = function ($cmd) {
     return sprintf(
-        '%s -r "%s" &',
+        'exec %s -r "%s" &',
         PHP_BINARY,
         stripslashes($cmd)
     );
@@ -46,11 +48,13 @@ $getFailedProcessKey = function ($stream, array $streamCollection) use ($getProc
 
 // Commands
 $cmds = [
+    "throw new Exception('fooo');",
     "echo 'foo\n';sleep(1); echo 'bar\n;",
     "echo 'foo\n';sleep(1); echo 'bar\n';",
     "sleep(1); echo '33\n'; sleep(1); echo 33.5, PHP_EOL;\n",
     "sleep(2); echo 34, PHP_EOL;\n",
-    "sleep(3); echo 35, PHP_EOL;\n"
+    "sleep(3); echo 35, PHP_EOL;\n",
+    "sleep(10); echo 135, PHP_EOL;\n",
 ];
 
 // Descriptors
@@ -60,7 +64,8 @@ $descriptors = [
     ['pipe', 'w'], // Process stderr
 ];
 
-// Execute processes one by one
+// #1 Execute processes one by one
+//
 $processCollection = $streamCollection = [];
 foreach ($cmds as $key => $cmd) {
     $process = proc_open(
@@ -73,10 +78,13 @@ foreach ($cmds as $key => $cmd) {
     $streamCollection[$key] = $pipes;
 }
 
-// Run system select to get process output
+// #2 Run system select to get process output
 //
 $processOutputs = [];
-while (count($processCollection)) {
+do {
+
+    // #2.1 Build read streams
+    //
     $readStreams = $closedProcesses = $failedProcesses = [];
     $writeStreams = $errStreams = null;
     foreach ($streamCollection as $streamSuiteKey => $streamSuite) {
@@ -86,8 +94,11 @@ while (count($processCollection)) {
         $readStreams[] = $streamOut;
         $readStreams[] = $streamErr;
     }
+
+    // #2.2 Run system select()
+    //
     if (isset($readStreams[0])) {
-        $num = stream_select($readStreams, $writeStreams, $errStreams, 1);
+        $num = stream_select($readStreams, $writeStreams, $errStreams, 0, 500);
         if ($num !== false && $num > 0) {
 
 
@@ -110,12 +121,14 @@ while (count($processCollection)) {
             }
 
         } else {
-            die();
+            usleep(500);
+//            echo 'Empty output';
+//            die();
             // ... Exception
         }
     }
 
-    // Close processes and process streams
+    // #2.3 Close processes and process streams
     //
     foreach ($closedProcesses as $processKey) {
         // Close all streams
@@ -137,9 +150,12 @@ while (count($processCollection)) {
                     isset($failedProcesses[$processKey]) ? 1 : 0,
                     implode('', $processOutputs[$processKey])
                 );
+//                var_dump(proc_get_status($processCollection[$processKey])['exitcode']);
                 proc_close($processCollection[$processKey]);
             }
             unset($processCollection[$processKey]);
         }
     }
-}
+} while (count($processCollection));
+
+printf("In %d seconds.", (time() - $start));
