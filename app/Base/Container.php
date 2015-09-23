@@ -85,11 +85,11 @@ class Container extends Pimple
      * Registers a service provider.
      *
      * @param ServiceProviderInterface $provider A ServiceProviderInterface instance
-     * @param array $values An array of values that customizes the provider
+     * @param array $values An array of values that customizes the provider (never used)
      *
      * @return static
      */
-    public function register(ServiceProviderInterface $provider)
+    public function register(ServiceProviderInterface $provider, array $values = [])
     {
         return parent::register($provider, []);
     }

@@ -5,6 +5,7 @@ namespace Servelat;
 
 
 use Servelat\Base\AbstractApplication;
+use Servelat\Components\TaskManager\Queues\QueuesComponent;
 use Servelat\Components\TaskManager\TaskManagerComponent;
 
 /**
@@ -33,6 +34,7 @@ class ServerApplication extends AbstractApplication
     {
         $this->setComponents([
             new TaskManagerComponent(),
+            new QueuesComponent(),
         ]);
 
         return $this;

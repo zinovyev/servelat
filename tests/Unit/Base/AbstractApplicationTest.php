@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Servelat\Tests\Unit;
+namespace Servelat\Tests\Unit\Base;
 
 use Servelat\Tests\Fixtures\Application;
 use Servelat\Tests\Fixtures\Component;
