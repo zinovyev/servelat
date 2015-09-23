@@ -21,12 +21,12 @@
     },
     "autoload": {
         "psr-4": {
-            "servelat\\": "app"
+            "Servelat\\": "app"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "servelat\\tests\\": "tests"
+            "Servelat\\Tests\\": "tests"
         }
     }
 }
