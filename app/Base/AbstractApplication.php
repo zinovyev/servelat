@@ -3,6 +3,7 @@
 
 namespace Servelat\Base;
 
+use Servelat\Base\Exceptions\InvalidArgumentException;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use ArrayObject;
 
@@ -28,6 +29,11 @@ abstract class AbstractApplication
      * @var \ArrayObject
      */
     protected $configuration;
+
+    /**
+     * @var array
+     */
+    protected $registeredComponents = [];
 
     /**
      * @return Container
@@ -63,5 +69,38 @@ abstract class AbstractApplication
         }
 
         return $this->configuration;
+    }
+
+    /**
+     * Check if component is registered or not.
+     *
+     * @param string $componentName The name of the component.
+     * @return bool
+     */
+    public function hasComponent($componentName)
+    {
+        return isset($this->registeredComponents[$componentName]);
+    }
+
+    /**
+     * Register new component.
+     *
+     * @param ComponentInterface $component Component instance
+     * @return $this
+     * @throws InvalidArgumentException
+     */
+    public function addComponent(ComponentInterface $component)
+    {
+        if ($this->hasComponent($component->getName())) {
+            throw new InvalidArgumentException(sprintf(
+                'Component %s is already registered',
+                $component->getName()
+            ));
+        }
+
+        $this->registeredComponents[$component->getName()] = true;
+        $component->register($this);
+
+        return $this;
     }
 }

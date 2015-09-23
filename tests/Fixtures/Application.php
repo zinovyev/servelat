@@ -7,8 +7,7 @@ namespace Servelat\Tests\Fixtures;
 use Servelat\Base\AbstractApplication;
 
 /**
- * Class Application.
- * Fixture for AbstractApplication test.
+ * Fixture for AbstractApplication.
  *
  * @author Ivan Zinovyev <vanyazin@gmail.com>
  */

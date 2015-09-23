@@ -1,15 +1,18 @@
 <?php
 
 
-namespace Servelat\Base;
+namespace Servelat\Tests\Fixtures;
+
+
+use Servelat\Base\AbstractApplication;
+use Servelat\Base\ComponentInterface;
 
 /**
- * Interface ComponentInterface.
- * Servelat Component interface.
+ * Fixture for ComponentInterface.
  *
  * @author Ivan Zinovyev <vanyazin@gmail.com>
  */
-interface ComponentInterface
+class Component implements  ComponentInterface
 {
     /**
      * Get the name of the component.
@@ -17,7 +20,10 @@ interface ComponentInterface
      *
      * @return string
      */
-    public function getName();
+    public function getName()
+    {
+        return 'fixture';
+    }
 
     /**
      * Register component.
@@ -26,5 +32,6 @@ interface ComponentInterface
      * @param AbstractApplication $application
      * @return mixed
      */
-    public function register(AbstractApplication $application);
+    public function register(AbstractApplication $application)
+    {}
 }

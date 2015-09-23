@@ -4,6 +4,7 @@
 namespace Servelat\Tests\Unit;
 
 use Servelat\Tests\Fixtures\Application;
+use Servelat\Tests\Fixtures\Component;
 
 /**
  * Class AbstractApplicationTest.
@@ -39,5 +40,24 @@ class AbstractApplicationTest extends \PHPUnit_Framework_TestCase
     {
         $configuraton = $this->app->getConfiguration();
         $this->assertInstanceOf('\ArrayObject', $configuraton);
+    }
+
+    public function testRegisterNewComponent()
+    {
+        $this->app->addComponent(new Component());
+        $this->assertTrue($this->app->hasComponent('fixture'));
+
+        return [$this->app];
+    }
+
+    /**
+     * @depends testRegisterNewComponent
+     * @expectedException \Servelat\Base\Exceptions\InvalidArgumentException
+     * @expectedExceptionMessage Component fixture is already registered
+     */
+    public function testExceptionOnDuplicateComponentRegistration(array $stack)
+    {
+        $app = $stack[0];
+        $app->addComponent(new Component());
     }
 }
