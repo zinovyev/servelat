@@ -1,24 +1,24 @@
 <?php
 
 
-namespace servelat;
+namespace Servelat;
 
 /**
- * Class ServelatEvents.
- * Dictionary class used to keep events.
+ * Final class ServelatEvents.
+ * List of base events.
  *
  * @author Ivan Zinovyev <vanyazin@gmail.com>
  */
 final class ServelatEvents
 {
     /**
-     * The application.configure event is  thrown each time
-     * the application is configured.
+     * Event task_manager.process_task is thrown
+     * when the TaskManager component processes the next task.
      *
-     * The event listener receives an
-     * servelat\base\events\ConfigureApplicationEvent instance.
+     * The event listener recieves an
+     * \Servelat\Components\TaskManager\Events\TaskManagerHandleTaskEvent instance.
      *
      * @const string
      */
-    const APPLICATION_CONFIGURE = 'application.configure';
+    const TASK_MANAGER_PROCESS_TASK = 'task_manager.process_task';
 }
