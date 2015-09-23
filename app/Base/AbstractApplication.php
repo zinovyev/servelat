@@ -36,6 +36,29 @@ abstract class AbstractApplication
     protected $registeredComponents = [];
 
     /**
+     * @param array $configuration Configuration array
+     */
+    public function __construct(array $configuration = [])
+    {
+        if ([] !== $configuration) {
+            $this->configure($configuration);
+        }
+    }
+
+    /**
+     * Configure application
+     *
+     * @param array $configuration Configuration array
+     * @return $this
+     */
+    public function configure(array $configuration = [])
+    {
+        $this->getConfiguration()->exchangeArray($configuration);
+
+        return $this;
+    }
+
+    /**
      * @return Container
      */
     public function getContainer()
