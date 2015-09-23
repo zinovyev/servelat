@@ -126,4 +126,20 @@ abstract class AbstractApplication
 
         return $this;
     }
+
+    /**
+     * Register set of components.
+     *
+     * @param array $components
+     * @return $this
+     * @throws InvalidArgumentException
+     */
+    public function setComponents(array $components)
+    {
+        foreach ($components as $component) {
+            $this->addComponent($component);
+        }
+
+        return $this;
+    }
 }
