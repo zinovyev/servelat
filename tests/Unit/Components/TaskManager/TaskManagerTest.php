@@ -8,7 +8,7 @@ use Servelat\Components\TaskManager\Handlers\Idle\EmptyTask;
 use Servelat\Tests\Bootstrap\ServerApplicationAwareTestCase;
 use Servelat\Components\TaskManager\TaskManager;
 
-class ProcessManagerTest extends ServerApplicationAwareTestCase
+class TaskManagerTest extends ServerApplicationAwareTestCase
 {
     public function testAddNextTask()
     {

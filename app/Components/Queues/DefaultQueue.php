@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Servelat\Components\TaskManager\Queues;
+namespace Servelat\Components\Queues;
 
 /**
  * Class DefaultQueue.

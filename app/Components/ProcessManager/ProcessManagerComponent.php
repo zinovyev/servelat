@@ -5,6 +5,7 @@ namespace Servelat\Components\ProcessManager;
 
 use Servelat\Base\AbstractApplication;
 use Servelat\Base\ComponentInterface;
+use Servelat\ServelatEvents;
 
 /**
  * Class ProcessManagerComponent.
@@ -34,6 +35,19 @@ class ProcessManagerComponent implements ComponentInterface
      */
     public function register(AbstractApplication $application)
     {
+        $dispatcher = $application->getDispatcher();
+        $container = $application->getContainer();
 
+        // Register process manger
+        $container['process_manager'] = function ($c) use ($dispatcher) {
+            return new ProcessManager($c['queues.default_queue'], $dispatcher);
+        };
+
+        // Register process manager as listener
+        $dispatcher->addListener(
+            ServelatEvents::TASK_MANAGER_AFTER_PROCESS_TASK,
+            [$container['process_manager'], 'onAfterProcessTask'],
+            10
+        );
     }
 }

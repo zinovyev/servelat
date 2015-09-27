@@ -20,7 +20,7 @@ class ServerApplicationAwareTestCase extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->app = new ServerApplication();
+        $configuration = TestConfigurator::getTestConfiguration();
+        $this->app = new ServerApplication($configuration);
     }
-
 }

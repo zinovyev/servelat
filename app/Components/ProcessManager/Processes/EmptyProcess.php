@@ -14,6 +14,16 @@ use Servelat\Components\ProcessManager\ProcessInterface;
 class EmptyProcess implements ProcessInterface
 {
     /**
+     * @var array
+     */
+    protected $streams;
+
+    /**
+     * @var array
+     */
+    protected $output;
+
+    /**
      * Get list of streams (stdin, stdout, stderr).
      * Every stream must be a resource of type "stream".
      *
@@ -21,18 +31,28 @@ class EmptyProcess implements ProcessInterface
      */
     public function getStreams()
     {
-        // TODO: Implement getStreams() method.
+        if (null === $this->streams) {
+            $this->streams = [
+                fopen('/dev/null', 'w'),    // Process stdin stream
+                fopen('/dev/null', 'r'),    // Process stdout stream
+                fopen('/dev/null', 'r'),    // Process stderr stream
+            ];
+        }
+
+        return $this->streams;
     }
 
     /**
      * Add new line from stdout/stderr.
      *
-     * @param $line
+     * @param string $line
      * @return $this
      */
     public function addOutputLine($line)
     {
-        // TODO: Implement addOutputLine() method.
+        $this->output[] = (string) $line;
+
+        return $this;
     }
 
     /**
@@ -42,6 +62,6 @@ class EmptyProcess implements ProcessInterface
      */
     public function getOutputLines()
     {
-        // TODO: Implement getOutputLines() method.
+        return $this->output;
     }
 }

@@ -4,6 +4,8 @@
 namespace Servelat\Components\ProcessManager;
 
 
+use Servelat\Components\TaskManager\Events\AfterProcessTaskEvent;
+
 class ProcessManager
 {
     /**
@@ -22,6 +24,20 @@ class ProcessManager
     public function __construct(\SplQueue $processQueue)
     {
         $this->processQueue = $processQueue;
+    }
+
+    /**
+     * Handle after process task event.
+     *
+     * @param \Servelat\Components\TaskManager\Events\AfterProcessTaskEvent $event
+     * @return $this
+     */
+    public function onAfterProcessTask(AfterProcessTaskEvent $event)
+    {
+        $process = $event->getProcess();
+        $this->addProcess($process);
+
+        return $this;
     }
 
     /**
