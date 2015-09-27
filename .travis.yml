@@ -10,9 +10,6 @@ matrix:
     - php: 7.0
     - hhvm
 
-before_script:
-  - php composer.phar install --dev --no-interaction
-
 sudo: false
 
 install: travis_retry composer install --no-interaction --prefer-source
