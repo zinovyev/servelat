@@ -38,7 +38,7 @@ class IdleHandler implements TaskHandlerInterface
      */
     public function handle(TaskInterface $task)
     {
-        return new EmptyProcess();
+        return new EmptyProcess($task);
     }
 
     /**
