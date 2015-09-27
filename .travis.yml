@@ -10,8 +10,16 @@ matrix:
     - php: 7.0
     - hhvm
 
+before_script:
+  - php composer.phar install --dev --no-interaction
+
 sudo: false
 
 install: travis_retry composer install --no-interaction --prefer-source
 
-script: phpunit --testsuite servelat-unit
+script:
+  - mkdir -p build/logs
+  - phpunit --testsuite servelat-unit
+
+after_script:
+  - php vendor/bin/coveralls
