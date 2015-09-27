@@ -14,4 +14,9 @@ sudo: false
 
 install: travis_retry composer install --no-interaction --prefer-source
 
-script: phpunit --testsuite servelat-unit
+script:
+  - mkdir -p build/logs
+  - phpunit --testsuite servelat-unit
+
+after_script:
+  - php vendor/bin/coveralls

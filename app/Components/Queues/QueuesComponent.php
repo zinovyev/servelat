@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Servelat\Components\TaskManager\Queues;
+namespace Servelat\Components\Queues;
 
 
 use Servelat\Base\AbstractApplication;
@@ -40,6 +40,11 @@ class QueuesComponent implements ComponentInterface
         // Set default queue factory
         $container['queues.default_queue'] = $container->factory(function ($c) {
             return new DefaultQueue();
+        });
+
+        // Set default queue factory
+        $container['queues.default_list'] = $container->factory(function ($c) {
+            return new DefaultLinkedList();
         });
     }
 }

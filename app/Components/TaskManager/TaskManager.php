@@ -3,7 +3,8 @@
 
 namespace Servelat\Components\TaskManager;
 
-use Servelat\Components\TaskManager\Events\TaskManagerHandleTaskEvent;
+use Servelat\Components\TaskManager\Events\AfterProcessTaskEvent;
+use Servelat\Components\TaskManager\Events\ProcessTaskEvent;
 use Servelat\ServelatEvents;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
@@ -69,15 +70,21 @@ class TaskManager
         }
 
         // Handle task
-        $handleTaskEvent = new TaskManagerHandleTaskEvent($task);
+        $processTaskEvent = new ProcessTaskEvent($task);
         $this->dispatcher->dispatch(
             ServelatEvents::TASK_MANAGER_PROCESS_TASK,
-            $handleTaskEvent
+            $processTaskEvent
         );
 
-        if (null === $process = $handleTaskEvent->getProcess()) {
+        if (null === $process = $processTaskEvent->getProcess()) {
             throw new \RuntimeException('The task was not handled correctly.');
         }
+
+        $afterProcessTaskEvent = new AfterProcessTaskEvent($process);
+        $this->dispatcher->dispatch(
+            ServelatEvents::TASK_MANAGER_AFTER_PROCESS_TASK,
+            $afterProcessTaskEvent
+        );
 
         return $process;
     }

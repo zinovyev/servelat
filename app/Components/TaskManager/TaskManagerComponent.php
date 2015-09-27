@@ -56,7 +56,7 @@ class TaskManagerComponent implements  ComponentInterface
         // Add Idle handler as event listener
         $dispatcher->addListener(
             ServelatEvents::TASK_MANAGER_PROCESS_TASK,
-            [new IdleHandler(), 'onHandleTask'],
+            [new IdleHandler(), 'onProcessTask'],
             10
         );
 

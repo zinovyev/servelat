@@ -13,7 +13,7 @@ use Symfony\Component\EventDispatcher\Event;
  *
  * @author Ivan Zinovyev <vanyazin@gmail.com>
  */
-class TaskManagerHandleTaskEvent extends Event
+class ProcessTaskEvent extends Event
 {
     /**
      * @var TaskInterface

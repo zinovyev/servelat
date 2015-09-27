@@ -6,7 +6,7 @@ namespace Servelat\Components\TaskManager\Handlers\Idle;
 
 use Servelat\Components\ProcessManager\Processes\EmptyProcess;
 use Servelat\Components\ProcessManager\ProcessInterface;
-use Servelat\Components\TaskManager\Events\TaskManagerHandleTaskEvent;
+use Servelat\Components\TaskManager\Events\ProcessTaskEvent;
 use Servelat\Components\TaskManager\TaskHandlerInterface;
 use Servelat\Components\TaskManager\TaskInterface;
 
@@ -38,13 +38,13 @@ class IdleHandler implements TaskHandlerInterface
      */
     public function handle(TaskInterface $task)
     {
-        return new EmptyProcess();
+        return new EmptyProcess($task);
     }
 
     /**
-     * @param \Servelat\Components\TaskManager\Events\TaskManagerHandleTaskEvent $event
+     * @param \Servelat\Components\TaskManager\Events\ProcessTaskEvent $event
      */
-    public function onHandleTask(TaskManagerHandleTaskEvent $event)
+    public function onProcessTask(ProcessTaskEvent $event)
     {
         $task = $event->getTask();
         if ($this->isSuitableFor($task)) {
