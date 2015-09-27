@@ -14,7 +14,7 @@ Servelat is a way to do things async with the PHP.
 - [Extending](## Extending)
 
 ## About
-In work...
+Servelat is is an Open Source component-based PHP framework for developing applications in the asynchronous manner.
 
 ## Installation
 In work...
