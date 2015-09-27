@@ -38,7 +38,7 @@ class ProcessManagerComponent implements ComponentInterface
         $dispatcher = $application->getDispatcher();
         $container = $application->getContainer();
 
-        // Register process manger
+        // Register process manger service
         $container['process_manager'] = function ($c) use ($dispatcher) {
             return new ProcessManager($c['queues.default_queue'], $dispatcher);
         };
