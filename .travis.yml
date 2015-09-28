@@ -19,4 +19,4 @@ script:
   - phpunit --testsuite servelat-unit
 
 after_script:
-  - php vendor/bin/coveralls
+  - php vendor/bin/coveralls -v --exclude-no-stmt
