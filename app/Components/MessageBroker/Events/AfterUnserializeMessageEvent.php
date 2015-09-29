@@ -10,7 +10,7 @@ use Symfony\Component\EventDispatcher\Event;
  * Class AfterUnserializeMessageEvent.
  * The event AfterUnserializeMessageEvent is throu.
  *
- * @author Ivan Zinovyev <i.zinovyev@rambler-co.ru>
+ * @author Ivan Zinovyev <vanyazin@gmail.com>
  */
 class AfterUnserializeMessageEvent extends Event
 {
