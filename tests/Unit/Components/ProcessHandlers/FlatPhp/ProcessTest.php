@@ -54,4 +54,18 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
         $this->process->setStreams($streams);
         $this->assertEquals($streams, $this->process->getStreams());
     }
+
+    public function testTaskIsSet()
+    {
+        $this->assertInstanceOf('\Servelat\Components\ProcessHandlers\FlatPhp\Task', $this->process->getTask());
+    }
+
+    public function testSimpleAssignments()
+    {
+        $this->process->addOutputLine('foo');
+        $this->process->setExitCode(1);
+
+        $this->assertEquals(1, $this->process->getExitCode());
+        $this->assertEquals(['foo'], $this->process->getOutputLines());
+    }
 }
