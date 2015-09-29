@@ -1,20 +1,23 @@
 <?php
 
 
-namespace Servelat\Components\ProcessManager;
+namespace Servelat\Components\ProcessHandlers;
+
 
 use Servelat\Base\AbstractApplication;
 use Servelat\Base\ComponentInterface;
+use Servelat\Components\ProcessHandlers\FlatPhp\Task;
+use Servelat\Components\ProcessHandlers\FlatPhp\TaskHandler;
 use Servelat\ServelatEvents;
 
 /**
- * Class ProcessManagerComponent.
- * This component contains processes and a manager class to rule processes.
+ * Class ProcessHandlersComponent.
  *
  * @author Ivan Zinovyev <vanyazin@gmail.com>
  */
-class ProcessManagerComponent implements ComponentInterface
+class ProcessHandlersComponent implements ComponentInterface
 {
+
     /**
      * Get the name of the component.
      * Used to register unique component.
@@ -23,7 +26,7 @@ class ProcessManagerComponent implements ComponentInterface
      */
     public function getName()
     {
-        return 'process_manager';
+        return 'process_handlers';
     }
 
     /**
@@ -38,16 +41,18 @@ class ProcessManagerComponent implements ComponentInterface
         $dispatcher = $application->getDispatcher();
         $container = $application->getContainer();
 
-        // Register process manger service
-        $container['process_manager.process_manager'] = function ($c) use ($dispatcher) {
-            return new ProcessManager($c['queues.default_queue'], $dispatcher);
-        };
+        // Register empty task factory
+        $container['process_handlers.flat_php_task'] = $container->factory(function ($c) {
+            $flatTask = new Task();
+            $flatTask->setId(time());
 
-        // Register process manager as listener
+            return $flatTask;
+        });
+
         $dispatcher->addListener(
-            ServelatEvents::TASK_MANAGER_AFTER_PROCESS_TASK,
-            [$container['process_manager.process_manager'], 'onAfterProcessTask'],
-            10
+            ServelatEvents::TASK_MANAGER_PROCESS_TASK,
+            [new TaskHandler(), 'onProcessTask'],
+            100
         );
     }
 }
