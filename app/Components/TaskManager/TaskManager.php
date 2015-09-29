@@ -32,6 +32,16 @@ class TaskManager
         $this->dispatcher = $dispatcher;
     }
 
+    public function onMessageReceived()
+    {
+
+    }
+
+    public function onProcessClosed()
+    {
+
+    }
+
     /**
      * Push the task to the queue.
      *
