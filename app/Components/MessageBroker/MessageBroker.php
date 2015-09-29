@@ -3,6 +3,10 @@
 
 namespace Servelat\Components\MessageBroker;
 
+use Servelat\Components\MessageBroker\Events\UnserializeMessageEvent;
+use Servelat\ServelatEvents;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+
 /**
  * Class MessageBroker.
  * The message broker is used to handle in/out messages.
@@ -11,23 +15,22 @@ namespace Servelat\Components\MessageBroker;
  */
 class MessageBroker
 {
-    public function parseNexRequestMessage()
-    {
+    /**
+     * @var EventDispatcher
+     */
+    protected $dispatcher;
 
+    public function __construct(EventDispatcher $dispatcher)
+    {
+        $this->dispatcher = $dispatcher;
     }
 
     public function addRequestMessage(MessageInterface $message)
     {
-
-    }
-
-    public function getNextResponseMessage()
-    {
-
-    }
-
-    public function addResponseMessage(MessageInterface $message)
-    {
-
+        $unserializeMessageEvent = new UnserializeMessageEvent($message);
+        $this->dispatcher->dispatch(
+            ServelatEvents::MESSAGE_BROKER_UNSERIALIZE_MESSAGE,
+            $unserializeMessageEvent
+        );
     }
 }

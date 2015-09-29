@@ -3,6 +3,7 @@
 
 namespace Servelat\Components\ProcessHandlers\FlatPhp;
 
+use Servelat\Base\Exceptions\InvalidArgumentException;
 use Servelat\Components\ProcessHandlers\ResourceBasedProcessInterface;
 use Servelat\Components\ProcessManager\ProcessInterface;
 use Servelat\Components\TaskManager\TaskInterface;
@@ -62,6 +63,25 @@ class Process implements ProcessInterface, ResourceBasedProcessInterface
     public function getStreams()
     {
         return $this->streams;
+    }
+
+    /**
+     * Set streams (pipes) returned by the proc_open() function call.
+     *
+     * @param array $streams Array of stream resources
+     * @return $this
+     * @throws InvalidArgumentException
+     */
+    public function setStreams(array $streams)
+    {
+        $this->streams = $streams;
+        foreach ($this->streams as $stream) {
+            if (!(is_resource($stream))) {
+                throw new InvalidArgumentException('Stream should be of type resource only!');
+            }
+        }
+
+        return $this;
     }
 
     /**
@@ -149,23 +169,14 @@ class Process implements ProcessInterface, ResourceBasedProcessInterface
      *
      * @param resource $resource
      * @return $this
+     * @throws InvalidArgumentException
      */
     public function setResource($resource)
     {
+        if (!(is_resource($resource))) {
+            throw new InvalidArgumentException('Resource property should be of type resource only!');
+        }
         $this->resource = $resource;
-
-        return $this;
-    }
-
-    /**
-     * Set streams (pipes) returned by the proc_open() function call.
-     *
-     * @param array $streams Array of stream resources
-     * @return $this
-     */
-    public function setStreams(array $streams)
-    {
-        $this->streams = $streams;
 
         return $this;
     }
