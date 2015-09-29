@@ -20,12 +20,17 @@ class TaskHandlerTest extends ServerApplicationAwareTestCase
 
         /** @var Task $flatTask */
         $flatTask = $this->app->getContainer()['process_handlers.flat_php_task'];
-        $flatTask->setPayload('sleep(5); echo foo;');
+        $flatTask->setPayload('echo foo;');
 
         $taskManager->addTask($flatTask);
+        $this->assertEquals(1, $taskManager->countTasks());
         $taskManager->handleNext();
+        $this->assertEquals(0, $taskManager->countTasks());
 
-        var_dump( $processManager->countProcesses() );
+        $this->assertEquals(1, $processManager->countProcesses());
+        sleep(1);
+        $num = $processManager->streamSelect();
 
+        $this->assertEquals(1, $num);
     }
 }

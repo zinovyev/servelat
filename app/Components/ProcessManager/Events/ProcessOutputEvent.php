@@ -5,13 +5,14 @@ namespace Servelat\Components\ProcessManager\Events;
 
 use Servelat\Components\ProcessManager\ProcessInterface;
 use Servelat\Components\TaskManager\TaskInterface;
+use Symfony\Component\EventDispatcher\Event;
 
 /**
  * Class ProcessOutputEvent.
  *
  * @author Ivan Zinovyev <vanyazin@gmail.com>
  */
-class ProcessOutputEvent
+class ProcessOutputEvent extends Event
 {
     /**
      * @var TaskInterface

@@ -4,6 +4,7 @@
 namespace Servelat\Components\ProcessManager\Events;
 
 
+use Servelat\Components\ProcessManager\ProcessInterface;
 use Symfony\Component\EventDispatcher\Event;
 
 /**

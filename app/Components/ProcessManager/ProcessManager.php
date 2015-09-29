@@ -139,7 +139,7 @@ class ProcessManager
         }
         $stdOutStreamHash = $this->buildStreamHash($streamSuite[1]);
         $this->streamToProcessKeyHashMap[$stdOutStreamHash] = $processKey;
-        $this->stdOutStreams[$stdInStreamHash] = $streamSuite[1];
+        $this->stdOutStreams[$stdOutStreamHash] = $streamSuite[1];
 
         // Stderr stream
         if (!isset($streamSuite[2]) || !$this->checkIsStream($streamSuite[2])) {
@@ -147,7 +147,7 @@ class ProcessManager
         }
         $stdErrStreamHash = $this->buildStreamHash($streamSuite[2]);
         $this->streamToProcessKeyHashMap[$stdErrStreamHash] = $processKey;
-        $this->stdErrStreams[$stdInStreamHash] = $streamSuite[2];
+        $this->stdErrStreams[$stdErrStreamHash] = $streamSuite[2];
 
         return $this;
     }
@@ -324,6 +324,7 @@ class ProcessManager
     protected function getStreamType($stream)
     {
         $streamHash = $this->buildStreamHash($stream);
+
         if (isset($this->stdOutStreams[$streamHash])) {
             return self::STREAM_OUT;
         } elseif (isset($this->stdErrStreams[$streamHash])) {
