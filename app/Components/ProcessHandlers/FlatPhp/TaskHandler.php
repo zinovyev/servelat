@@ -8,6 +8,12 @@ use Servelat\Components\ProcessManager\ProcessInterface;
 use Servelat\Components\TaskManager\TaskHandlerInterface;
 use Servelat\Components\TaskManager\TaskInterface;
 
+/**
+ * Class TaskHandler.
+ * The handler for the flat-php task.
+ *
+ * @author Ivan Zinovyev <vanyazin@gmail.com>
+ */
 class TaskHandler implements TaskHandlerInterface
 {
 

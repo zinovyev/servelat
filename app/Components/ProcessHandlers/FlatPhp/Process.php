@@ -7,15 +7,50 @@ use Servelat\Components\ProcessHandlers\ResourceBasedProcessInterface;
 use Servelat\Components\ProcessManager\ProcessInterface;
 use Servelat\Components\TaskManager\TaskInterface;
 
+/**
+ * Class Process.
+ * Simple wrapper for the process opened with proc_open() function.
+ *
+ * @author Ivan Zinovyev <vanyazin@gmail.com>
+ */
 class Process implements ProcessInterface, ResourceBasedProcessInterface
 {
+    /**
+     * @var \Servelat\Components\TaskManager\TaskInterface
+     */
+    protected $task;
+
+    /**
+     * @var array
+     */
+    protected $streams;
+
+    /**
+     * @var integer
+     */
+    protected $exitCode = -1;
+
+    /**
+     * @var array
+     */
+    protected $outputLines = [];
+
+    /**
+     * @var bool
+     */
+    protected $closed = false;
+
+    /**
+     * @var resource
+     */
+    protected $resource;
 
     /**
      * @param \Servelat\Components\TaskManager\TaskInterface $task
      */
     public function __construct(TaskInterface $task)
     {
-        // TODO: Implement __construct() method.
+        $this->task = $task;
     }
 
     /**
@@ -26,7 +61,7 @@ class Process implements ProcessInterface, ResourceBasedProcessInterface
      */
     public function getStreams()
     {
-        // TODO: Implement getStreams() method.
+        return $this->streams;
     }
 
     /**
@@ -38,7 +73,9 @@ class Process implements ProcessInterface, ResourceBasedProcessInterface
      */
     public function setExitCode($exitCode)
     {
-        // TODO: Implement setExitCode() method.
+        $this->exitCode = (int) $exitCode;
+
+        return $this;
     }
 
     /**
@@ -49,7 +86,7 @@ class Process implements ProcessInterface, ResourceBasedProcessInterface
      */
     public function getExitCode()
     {
-        // TODO: Implement getExitCode() method.
+        return $this->exitCode;
     }
 
     /**
@@ -60,7 +97,9 @@ class Process implements ProcessInterface, ResourceBasedProcessInterface
      */
     public function addOutputLine($line)
     {
-        // TODO: Implement addOutputLine() method.
+        $this->outputLines[] = $line;
+
+        return $this;
     }
 
     /**
@@ -70,7 +109,7 @@ class Process implements ProcessInterface, ResourceBasedProcessInterface
      */
     public function getOutputLines()
     {
-        // TODO: Implement getOutputLines() method.
+        return $this->outputLines;
     }
 
     /**
@@ -80,7 +119,7 @@ class Process implements ProcessInterface, ResourceBasedProcessInterface
      */
     public function getTask()
     {
-        // TODO: Implement getTask() method.
+        return $this->task;
     }
 
     /**
@@ -90,7 +129,7 @@ class Process implements ProcessInterface, ResourceBasedProcessInterface
      */
     public function isClosed()
     {
-        // TODO: Implement isClosed() method.
+        return !!$this->closed;
     }
 
     /**
@@ -100,7 +139,9 @@ class Process implements ProcessInterface, ResourceBasedProcessInterface
      */
     public function close()
     {
-        // TODO: Implement close() method.
+        $this->closed = true;
+
+        return $this;
     }
 
     /**
@@ -111,7 +152,9 @@ class Process implements ProcessInterface, ResourceBasedProcessInterface
      */
     public function setResource($resource)
     {
-        // TODO: Implement setResource() method.
+        $this->resource = $resource;
+
+        return $this;
     }
 
     /**
@@ -122,6 +165,8 @@ class Process implements ProcessInterface, ResourceBasedProcessInterface
      */
     public function setStreams(array $streams)
     {
-        // TODO: Implement setStreams() method.
+        $this->streams = $streams;
+
+        return $this;
     }
 }
