@@ -5,6 +5,7 @@ namespace Servelat;
 
 
 use Servelat\Base\AbstractApplication;
+use Servelat\Components\ProcessHandlers\ProcessHandlersComponent;
 use Servelat\Components\ProcessManager\ProcessManagerComponent;
 use Servelat\Components\Queues\QueuesComponent;
 use Servelat\Components\TaskManager\TaskManagerComponent;
@@ -37,6 +38,7 @@ class ServerApplication extends AbstractApplication
             new TaskManagerComponent(),
             new QueuesComponent(),
             new ProcessManagerComponent(),
+            new ProcessHandlersComponent(),
         ]);
 
         return $this;
