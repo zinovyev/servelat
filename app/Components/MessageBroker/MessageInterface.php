@@ -26,7 +26,7 @@ interface MessageInterface
     /**
      * Get the routing key for the message.
      *
-     * @return string
+     * @return null|string
      */
     public function getRoutingKey();
 
