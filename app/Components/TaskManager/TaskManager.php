@@ -3,6 +3,8 @@
 
 namespace Servelat\Components\TaskManager;
 
+use Servelat\Components\MessageBroker\Events\AfterUnserializeMessageEvent;
+use Servelat\Components\MessageBroker\MessageBroker;
 use Servelat\Components\TaskManager\Events\AfterProcessTaskEvent;
 use Servelat\Components\TaskManager\Events\ProcessTaskEvent;
 use Servelat\ServelatEvents;
@@ -30,16 +32,6 @@ class TaskManager
     {
         $this->taskQueue = $taskQueue;
         $this->dispatcher = $dispatcher;
-    }
-
-    public function onMessageReceived()
-    {
-
-    }
-
-    public function onProcessClosed()
-    {
-
     }
 
     /**
@@ -97,5 +89,24 @@ class TaskManager
         );
 
         return $process;
+    }
+
+    /**
+     * Process after unserialize message.
+     *
+     * @param \Servelat\Components\MessageBroker\Events\AfterUnserializeMessageEvent $event
+     */
+    public function onAfterMessageUnserializeEvent(AfterUnserializeMessageEvent $event)
+    {
+        if (
+            MessageBroker::ROUTING_KEY_TASK_MANAGER === $event->getRoutingKey()
+            && $task = unserialize(base64_decode($event->getPayload(), true))
+        ) {
+            if ($task instanceof TaskInterface) {
+                $this->addTask($task);
+            }
+
+            $event->stopPropagation();
+        }
     }
 }

@@ -21,11 +21,16 @@ class UnserializeMessageEvent extends Event
     protected $message;
 
     /**
-     * @param MessageInterface $message
+     * @var string
      */
-    public function __construct(MessageInterface $message)
+    protected $serializedMessage;
+
+    /**
+     * @param string $serializedMessage
+     */
+    public function __construct($serializedMessage)
     {
-        $this->message = $message;
+        $this->serializedMessage = $serializedMessage;
     }
 
     /**
@@ -34,5 +39,24 @@ class UnserializeMessageEvent extends Event
     public function getMessage()
     {
         return $this->message;
+    }
+
+    /**
+     * @param MessageInterface $message
+     * @return UnserializeMessageEvent
+     */
+    public function setMessage(MessageInterface $message)
+    {
+        $this->message = $message;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSerializedMessage()
+    {
+        return $this->serializedMessage;
     }
 }

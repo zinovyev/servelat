@@ -17,6 +17,13 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 class MessageBroker
 {
     /**
+     * Routing key for the task manager component.
+     *
+     * @const string
+     */
+    const ROUTING_KEY_TASK_MANAGER = 'task_manager';
+
+    /**
      * @var EventDispatcher
      */
     protected $dispatcher;
@@ -32,20 +39,24 @@ class MessageBroker
     /**
      * Process new request message.
      *
-     * @param \Servelat\Components\MessageBroker\MessageInterface $message
+     * @param string $serializedMessage
      * @return $this
      */
-    public function routeRequestMessage(MessageInterface $message)
+    public function routeRequestMessage($serializedMessage)
     {
         // Try to unserialize message
-        $unserializeMessageEvent = new UnserializeMessageEvent($message);
+        $unserializeMessageEvent = new UnserializeMessageEvent($serializedMessage);
         $this->dispatcher->dispatch(
             ServelatEvents::MESSAGE_BROKER_UNSERIALIZE_MESSAGE,
             $unserializeMessageEvent
         );
 
         // Route data if any routing key was found
-        if (null !== $routingKey = $message->getRoutingKey()) {
+        $message = $unserializeMessageEvent->getMessage();
+        if (
+            $message instanceof MessageInterface
+            && null !== $routingKey = $message->getRoutingKey()
+        ) {
             $afterUnserializeMessageEvent = new AfterUnserializeMessageEvent(
                 $routingKey,
                 $message->getPayload()

@@ -59,6 +59,11 @@ class TaskManagerComponent implements  ComponentInterface
             [new IdleHandler(), 'onProcessTask'],
             10
         );
+        $dispatcher->addListener(
+            ServelatEvents::MESSAGE_BROKER_AFTER_UNSERIALIZE_MESSAGE,
+            [$container['task_manager.task_manager'], 'onAfterMessageUnserializeEvent'],
+            10
+        );
 
         return $this;
     }

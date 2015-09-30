@@ -6,7 +6,15 @@ namespace Servelat\Components\MessageBroker;
 
 use Servelat\Base\AbstractApplication;
 use Servelat\Base\ComponentInterface;
+use Servelat\Components\MessageBroker\Serializers\JsonMessageSerializer;
+use Servelat\ServelatEvents;
 
+/**
+ * Class MessageBrokerComponent.
+ * The message broker component. Used to route and serialize/unserialize messages.
+ *
+ * @author Ivan Zinovyev <vanyazin@gmail.com>
+ */
 class MessageBrokerComponent implements ComponentInterface
 {
 
@@ -18,7 +26,7 @@ class MessageBrokerComponent implements ComponentInterface
      */
     public function getName()
     {
-        // TODO: Implement getName() method.
+        return 'message_broker';
     }
 
     /**
@@ -30,6 +38,19 @@ class MessageBrokerComponent implements ComponentInterface
      */
     public function register(AbstractApplication $application)
     {
-        // TODO: Implement register() method.
+        $dispatcher = $application->getDispatcher();
+        $container = $application->getContainer();
+
+        $container['message_broker.message_broker'] = function ($c) use ($dispatcher) {
+            return new MessageBroker($dispatcher);
+        };
+        $container['message_broker.json_message_serializer'] = function ($c) {
+            return new JsonMessageSerializer();
+        };
+
+        $dispatcher->addListener(
+            ServelatEvents::MESSAGE_BROKER_UNSERIALIZE_MESSAGE,
+            [$container['message_broker.json_message_serializer'], 'onMessageUnserializeEvent']
+        );
     }
 }

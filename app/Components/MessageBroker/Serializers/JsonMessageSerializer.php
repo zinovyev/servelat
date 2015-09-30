@@ -8,6 +8,7 @@ use Servelat\Components\MessageBroker\MessageInterface;
 use Servelat\Components\MessageBroker\Messages\JsonMessage;
 use Servelat\Components\MessageBroker\SerializerInterface;
 use Servelat\Components\ProcessManager\Exceptions\RuntimeException;
+use Servelat\Components\MessageBroker\Events\UnserializeMessageEvent;
 
 /**
  * Class JsonMessageSerializer.
@@ -101,5 +102,23 @@ class JsonMessageSerializer implements SerializerInterface
         );
 
         return $jsonMessage;
+    }
+
+    /**
+     * Handle unserialize message event.
+     *
+     * @param \Servelat\Components\MessageBroker\Events\UnserializeMessageEvent $event
+     * @throws \Servelat\Components\ProcessManager\Exceptions\RuntimeException
+     */
+    public function onMessageUnserializeEvent(UnserializeMessageEvent $event)
+    {
+        $serializedMessage = $event->getSerializedMessage();
+        if ($this->canUnserialize($serializedMessage)) {
+            $message = $this->unserialize($serializedMessage);
+            $event
+                ->setMessage($message)
+                ->stopPropagation()
+            ;
+        }
     }
 }
