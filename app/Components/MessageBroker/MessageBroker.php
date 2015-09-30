@@ -5,6 +5,7 @@ namespace Servelat\Components\MessageBroker;
 
 use Servelat\Components\MessageBroker\Events\AfterUnserializeMessageEvent;
 use Servelat\Components\MessageBroker\Events\UnserializeMessageEvent;
+use Servelat\Components\TaskManager\Events\AfterProcessTaskEvent;
 use Servelat\ServelatEvents;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 

@@ -109,4 +109,14 @@ class TaskManager
             $event->stopPropagation();
         }
     }
+
+    /**
+     * Get processed task and create a response message.
+     *
+     * @param \Servelat\Components\TaskManager\Events\AfterProcessTaskEvent $event
+     */
+    public function onAfterProcessTask(AfterProcessTaskEvent $event)
+    {
+
+    }
 }
