@@ -58,4 +58,32 @@ final class ServelatEvents
      * \Servelat\Components\ProcessManager\Events\ProcessClosedEvent instance.
      */
     const PROCESS_MANAGER_PROCESS_CLOSED = 'process_manager.process_closed';
+
+    /**
+     * Event message_broker.unserialize_message is thrown
+     * when message broker receives a new message.
+     *
+     * The event listener receives an
+     * \Servelat\Components\MessageBroker\Events\UnserializeMessageEvent instance.
+     *
+     */
+    const MESSAGE_BROKER_UNSERIALIZE_MESSAGE = 'message_broker.unserialize_message';
+
+    /**
+     * Event message_broker.after_unserialize_message is thrown
+     * after the message was unserialized.
+     *
+     * The event listener receives an
+     * \Servelat\Components\MessageBroker\Events\AfterUnserializeMessageEvent instance.
+     */
+    const MESSAGE_BROKER_AFTER_UNSERIALIZE_MESSAGE = 'message_broker.after_unserialize_message';
+
+    /**
+     * Event message_broker.response_message is thrown
+     * after the message when the task result is compiled.
+     *
+     * The event listener receives an
+     * \Servelat\Components\MessageBroker\Events\ResponseMessageEvent instance.
+     */
+    const MESSAGE_BROKER_RESPONSE_MESSAGE = 'message_broker.response_message';
 }

@@ -14,7 +14,7 @@ class ProcessManagerTest extends ServerApplicationAwareTestCase
     public function testAddProcessesToTheProcessManager()
     {
         /** @var ProcessManager $processManager */
-        $processManager = $this->app->getContainer()['process_manager'];
+        $processManager = $this->app->getContainer()['process_manager.process_manager'];
 
         // Collect processes
         $processes = [];

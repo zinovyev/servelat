@@ -5,6 +5,8 @@ namespace Servelat;
 
 
 use Servelat\Base\AbstractApplication;
+use Servelat\Components\MessageBroker\MessageBrokerComponent;
+use Servelat\Components\ProcessHandlers\ProcessHandlersComponent;
 use Servelat\Components\ProcessManager\ProcessManagerComponent;
 use Servelat\Components\Queues\QueuesComponent;
 use Servelat\Components\TaskManager\TaskManagerComponent;
@@ -34,9 +36,11 @@ class ServerApplication extends AbstractApplication
     protected function registerComponents()
     {
         $this->setComponents([
-            new TaskManagerComponent(),
             new QueuesComponent(),
+            new TaskManagerComponent(),
             new ProcessManagerComponent(),
+            new ProcessHandlersComponent(),
+            new MessageBrokerComponent(),
         ]);
 
         return $this;

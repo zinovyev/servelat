@@ -41,10 +41,5 @@ class QueuesComponent implements ComponentInterface
         $container['queues.default_queue'] = $container->factory(function ($c) {
             return new DefaultQueue();
         });
-
-        // Set default queue factory
-        $container['queues.default_list'] = $container->factory(function ($c) {
-            return new DefaultLinkedList();
-        });
     }
 }

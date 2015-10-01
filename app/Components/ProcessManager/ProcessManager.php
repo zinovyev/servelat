@@ -64,7 +64,7 @@ class ProcessManager
     /**
      * @var array
      */
-    protected $streamToProcessKeyHashMap = [];
+    protected $streamToKeyMap = [];
 
     /**
      * @var array
@@ -130,7 +130,7 @@ class ProcessManager
             throw new InvalidArgumentException('Every process should have an stdin stream #0 of type resource!');
         }
         $stdInStreamHash = $this->buildStreamHash($streamSuite[0]);
-        $this->streamToProcessKeyHashMap[$stdInStreamHash] = $processKey;
+        $this->streamToKeyMap[$stdInStreamHash] = $processKey;
         $this->stdInStreams[$stdInStreamHash] = $streamSuite[0];
 
         // Stdout stream
@@ -138,16 +138,16 @@ class ProcessManager
             throw new InvalidArgumentException('Every process should have an stdout stream #1 of type resource!');
         }
         $stdOutStreamHash = $this->buildStreamHash($streamSuite[1]);
-        $this->streamToProcessKeyHashMap[$stdOutStreamHash] = $processKey;
-        $this->stdOutStreams[$stdInStreamHash] = $streamSuite[1];
+        $this->streamToKeyMap[$stdOutStreamHash] = $processKey;
+        $this->stdOutStreams[$stdOutStreamHash] = $streamSuite[1];
 
         // Stderr stream
         if (!isset($streamSuite[2]) || !$this->checkIsStream($streamSuite[2])) {
             throw new InvalidArgumentException('Every process should have an stderr stream #2 of type resource!');
         }
         $stdErrStreamHash = $this->buildStreamHash($streamSuite[2]);
-        $this->streamToProcessKeyHashMap[$stdErrStreamHash] = $processKey;
-        $this->stdErrStreams[$stdInStreamHash] = $streamSuite[2];
+        $this->streamToKeyMap[$stdErrStreamHash] = $processKey;
+        $this->stdErrStreams[$stdErrStreamHash] = $streamSuite[2];
 
         return $this;
     }
@@ -254,7 +254,7 @@ class ProcessManager
             if (isset($this->streamSuites[$closedProcessKey])) {
                 foreach ($this->streamSuites[$closedProcessKey] as $stream) {
                     if ($this->checkIsStream($stream)) {
-                        unset($this->streamToProcessKeyHashMap[$this->buildStreamHash($stream)]);
+                        unset($this->streamToKeyMap[$this->buildStreamHash($stream)]);
                         fclose($stream);
                     }
                 }
@@ -310,8 +310,8 @@ class ProcessManager
     protected function getProcessKeyByStream($stream)
     {
         $streamHash = $this->buildStreamHash($stream);
-        return isset($this->streamToProcessKeyHashMap[$streamHash])
-            ? $this->streamToProcessKeyHashMap[$streamHash] : null ;
+        return isset($this->streamToKeyMap[$streamHash])
+            ? $this->streamToKeyMap[$streamHash] : null ;
     }
 
     /**
@@ -324,6 +324,7 @@ class ProcessManager
     protected function getStreamType($stream)
     {
         $streamHash = $this->buildStreamHash($stream);
+
         if (isset($this->stdOutStreams[$streamHash])) {
             return self::STREAM_OUT;
         } elseif (isset($this->stdErrStreams[$streamHash])) {
