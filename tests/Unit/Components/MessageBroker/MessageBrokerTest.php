@@ -8,6 +8,7 @@ use Servelat\Components\MessageBroker\MessageBroker;
 use Servelat\Components\MessageBroker\Messages\JsonMessage;
 use Servelat\Components\MessageBroker\Serializers\JsonMessageSerializer;
 use Servelat\Components\ProcessHandlers\FlatPhp\Task;
+use Servelat\Components\ProcessManager\ProcessManager;
 use Servelat\Components\TaskManager\TaskManager;
 use Servelat\Tests\Bootstrap\ServerApplicationAwareTestCase;
 
@@ -32,5 +33,9 @@ class MessageBrokerTest extends ServerApplicationAwareTestCase
         /** @var TaskManager $taskManager */
         $taskManager = $this->app->getContainer()['task_manager.task_manager'];
         $this->assertEquals(1, $taskManager->countTasks());
+
+        /** @var ProcessManager $processManager */
+        $processManager = $this->app->getContainer()['process_manager.process_manager'];
+        $processManager->streamSelect();
     }
 }

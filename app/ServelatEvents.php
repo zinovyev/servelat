@@ -79,11 +79,11 @@ final class ServelatEvents
     const MESSAGE_BROKER_AFTER_UNSERIALIZE_MESSAGE = 'message_broker.after_unserialize_message';
 
     /**
-     * Event task_manager.return_task_result is thrown
+     * Event message_broker.response_message is thrown
      * after the message when the task result is compiled.
      *
      * The event listener receives an
-     * \Servelat\Components\TaskManager\Events\ReturnTaskResult instance.
+     * \Servelat\Components\MessageBroker\Events\ResponseMessageEvent instance.
      */
-    const TASK_MANAGER_RETURN_TASK_RESULT = 'task_manager.return_task_result';
+    const MESSAGE_BROKER_RESPONSE_MESSAGE = 'message_broker.response_message';
 }

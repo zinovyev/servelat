@@ -16,6 +16,7 @@ class AfterUnserializeMessageEvent extends Event
 {
     /**
      * Can be whatever you want.
+     * The meaning part of the message.
      *
      * @var mixed
      */

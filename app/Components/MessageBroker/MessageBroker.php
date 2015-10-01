@@ -4,6 +4,7 @@
 namespace Servelat\Components\MessageBroker;
 
 use Servelat\Components\MessageBroker\Events\AfterUnserializeMessageEvent;
+use Servelat\Components\MessageBroker\Events\ResponseMessageEvent;
 use Servelat\Components\MessageBroker\Events\UnserializeMessageEvent;
 use Servelat\Components\TaskManager\Events\AfterProcessTaskEvent;
 use Servelat\ServelatEvents;
@@ -69,5 +70,27 @@ class MessageBroker
         }
 
         return $this;
+    }
+
+    /**
+     * Process response message.
+     *
+     * @param \Servelat\Components\MessageBroker\MessageInterface $message
+     * @return $this
+     */
+    public function routeResponseMessage(MessageInterface $message)
+    {
+        // TODO: route message to the destination point
+        return unserialize(base64_decode($message->getPayload()));
+    }
+
+    /**
+     * Handle response message event.
+     *
+     * @param \Servelat\Components\MessageBroker\Events\ResponseMessageEvent $event
+     */
+    public function onResponseMessage(ResponseMessageEvent $event)
+    {
+        $this->routeResponseMessage($event->getMessage());
     }
 }

@@ -52,5 +52,9 @@ class MessageBrokerComponent implements ComponentInterface
             ServelatEvents::MESSAGE_BROKER_UNSERIALIZE_MESSAGE,
             [$container['message_broker.json_message_serializer'], 'onMessageUnserializeEvent']
         );
+        $dispatcher->addListener(
+            ServelatEvents::MESSAGE_BROKER_RESPONSE_MESSAGE,
+            [$container['message_broker.message_broker'], 'onResponseMessage']
+        );
     }
 }

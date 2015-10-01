@@ -4,7 +4,9 @@
 namespace Servelat\Components\TaskManager;
 
 use Servelat\Components\MessageBroker\Events\AfterUnserializeMessageEvent;
+use Servelat\Components\MessageBroker\Events\ResponseMessageEvent;
 use Servelat\Components\MessageBroker\MessageBroker;
+use Servelat\Components\MessageBroker\Messages\JsonMessage;
 use Servelat\Components\ProcessManager\Events\ProcessClosedEvent;
 use Servelat\Components\ProcessManager\Events\ProcessFailedEvent;
 use Servelat\Components\ProcessManager\Events\ProcessOutputEvent;
@@ -128,12 +130,16 @@ class TaskManager
                 $event->getProcess()->getExitCode(),
                 array_filter($event->getProcess()->getOutputLines())
             );
+            $message = new JsonMessage(
+                $event->getProcess()->getTask()->getOwnerPid(),
+                base64_encode(serialize($taskResult))
+            );
 
             // Dispatch
-            $returnTaskResultEvent = new ReturnTaskResultEvent($taskResult);
+            $responseMessageEvent = new ResponseMessageEvent($message);
             $this->dispatcher->dispatch(
-                ServelatEvents::TASK_MANAGER_RETURN_TASK_RESULT,
-                $returnTaskResultEvent
+                ServelatEvents::MESSAGE_BROKER_RESPONSE_MESSAGE,
+                $responseMessageEvent
             );
         }
     }
