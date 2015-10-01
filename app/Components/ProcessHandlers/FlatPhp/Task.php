@@ -84,7 +84,7 @@ class Task implements TaskInterface
      */
     public function setOwnerPid($ownerPid)
     {
-        $this->ownerPid = $ownerPid;
+        $this->ownerPid = (int) $ownerPid;
 
         return $this;
     }
@@ -122,7 +122,7 @@ class Task implements TaskInterface
      */
     public function setNumberOfInstances($numberOfInstances)
     {
-        $this->numberOfInstances = $numberOfInstances;
+        $this->numberOfInstances = (int) $numberOfInstances;
 
         return $this;
     }
