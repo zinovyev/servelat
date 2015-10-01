@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Servelat\Components\TaskManager;
-
 
 use Servelat\Components\ProcessManager\Exceptions\RuntimeException;
 use Servelat\Components\ProcessManager\ProcessInterface;
@@ -16,9 +14,14 @@ use Servelat\Components\ProcessManager\ProcessInterface;
 class TaskResult
 {
     /**
-     * @var \Servelat\Components\TaskManager\TaskInterface
+     * @var string
      */
-    protected $task;
+    protected $id;
+
+    /**
+     * @var int
+     */
+    protected $ownerPid;
 
     /**
      * @var array
@@ -31,25 +34,33 @@ class TaskResult
     protected $exitCode;
 
     /**
-     * @param \Servelat\Components\ProcessManager\ProcessInterface $process
+     * @param string $id
+     * @param integer $ownerPid
+     * @param array $outputLines
+     * @param integer $exitCode
      */
-    public function __construct(ProcessInterface $process)
+    public function __construct($id, $ownerPid, $exitCode, array $outputLines = [])
     {
-        if (!$process->isClosed()) {
-            new RuntimeException('The process must be closed!');
-        }
-
-        $this->task = $process->getTask();
-        $this->outputLines = $process->getOutputLines();
-        $this->exitCode = $process->getExitCode();
+        $this->id = $id;
+        $this->ownerPid = $ownerPid;
+        $this->outputLines = $outputLines;
+        $this->exitCode = $exitCode;
     }
 
     /**
-     * @return TaskInterface
+     * @return string
      */
-    public function getTask()
+    public function getId()
     {
-        return $this->task;
+        return $this->id;
+    }
+
+    /**
+     * @return int
+     */
+    public function getOwnerPid()
+    {
+        return $this->ownerPid;
     }
 
     /**

@@ -10,6 +10,7 @@ use Servelat\Components\ProcessManager\Events\ProcessFailedEvent;
 use Servelat\Components\ProcessManager\Events\ProcessOutputEvent;
 use Servelat\Components\TaskManager\Events\AfterProcessTaskEvent;
 use Servelat\Components\TaskManager\Events\ProcessTaskEvent;
+use Servelat\Components\TaskManager\Events\ReturnTaskResultEvent;
 use Servelat\ServelatEvents;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
@@ -120,7 +121,21 @@ class TaskManager
      */
     public function onAfterProcessClosed(ProcessClosedEvent $event)
     {
+        if (null !== $event->getProcess()->getTask()) {
+            $taskResult = new TaskResult(
+                $event->getProcess()->getTask()->getId(),
+                $event->getProcess()->getTask()->getOwnerPid(),
+                $event->getProcess()->getExitCode(),
+                array_filter($event->getProcess()->getOutputLines())
+            );
 
+            // Dispatch
+            $returnTaskResultEvent = new ReturnTaskResultEvent($taskResult);
+            $this->dispatcher->dispatch(
+                ServelatEvents::TASK_MANAGER_RETURN_TASK_RESULT,
+                $returnTaskResultEvent
+            );
+        }
     }
 
     /**
@@ -131,7 +146,7 @@ class TaskManager
      */
     public function onAfterProcessFailed(ProcessFailedEvent $event)
     {
-
+        // @TODO handle process when failed...
     }
 
     /**
@@ -141,6 +156,6 @@ class TaskManager
      */
     public function onAfterProcessOutput(ProcessOutputEvent $event)
     {
-
+        // @TODO handle process when output is available...
     }
 }
