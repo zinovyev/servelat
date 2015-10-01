@@ -64,6 +64,21 @@ class TaskManagerComponent implements  ComponentInterface
             [$container['task_manager.task_manager'], 'onAfterMessageUnserializeEvent'],
             10
         );
+        $dispatcher->addListener(
+            ServelatEvents::PROCESS_MANAGER_PROCESS_CLOSED,
+            [$container['task_manager.task_manager'], 'onAfterProcessClosed'],
+            10
+        );
+        $dispatcher->addListener(
+            ServelatEvents::PROCESS_MANAGER_PROCESS_FAILED,
+            [$container['task_manager.task_manager'], 'onAfterProcessFailed'],
+            10
+        );
+        $dispatcher->addListener(
+            ServelatEvents::PROCESS_MANAGER_PROCESS_OUTPUT,
+            [$container['task_manager.task_manager'], 'onAfterProcessOutput'],
+            10
+        );
 
         return $this;
     }

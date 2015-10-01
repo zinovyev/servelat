@@ -5,6 +5,9 @@ namespace Servelat\Components\TaskManager;
 
 use Servelat\Components\MessageBroker\Events\AfterUnserializeMessageEvent;
 use Servelat\Components\MessageBroker\MessageBroker;
+use Servelat\Components\ProcessManager\Events\ProcessClosedEvent;
+use Servelat\Components\ProcessManager\Events\ProcessFailedEvent;
+use Servelat\Components\ProcessManager\Events\ProcessOutputEvent;
 use Servelat\Components\TaskManager\Events\AfterProcessTaskEvent;
 use Servelat\Components\TaskManager\Events\ProcessTaskEvent;
 use Servelat\ServelatEvents;
@@ -113,9 +116,30 @@ class TaskManager
     /**
      * Get processed task and create a response message.
      *
-     * @param \Servelat\Components\TaskManager\Events\AfterProcessTaskEvent $event
+     * @param \Servelat\Components\ProcessManager\Events\ProcessClosedEvent
      */
-    public function onAfterProcessTask(AfterProcessTaskEvent $event)
+    public function onAfterProcessClosed(ProcessClosedEvent $event)
+    {
+
+    }
+
+    /**
+     * Get processed task and create a response message.
+     *
+     * @param \Servelat\Components\ProcessManager\Events\ProcessFailedEvent
+     *
+     */
+    public function onAfterProcessFailed(ProcessFailedEvent $event)
+    {
+
+    }
+
+    /**
+     * Get processed task and create a response message.
+     *
+     * @param \Servelat\Components\ProcessManager\Events\ProcessOutputEvent
+     */
+    public function onAfterProcessOutput(ProcessOutputEvent $event)
     {
 
     }
