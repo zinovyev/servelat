@@ -3,6 +3,7 @@
 
 namespace Servelat\Tools;
 
+use Servelat\Tools\Commands\ServelatServerStartCommand;
 use Symfony\Component\Console\Application as SymfonyConsole;
 
 /**
@@ -47,6 +48,9 @@ class ConsoleRunner
     public static function createConsoleInstance()
     {
         $console = new SymfonyConsole(self::NAME, self::VERSION);
+        $console->addCommands([
+            new ServelatServerStartCommand(),
+        ]);
         return $console;
     }
 }
