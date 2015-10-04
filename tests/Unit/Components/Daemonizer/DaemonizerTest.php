@@ -44,8 +44,8 @@ class DaemonizerTest extends \PHPUnit_Framework_TestCase
 
     public function testGetCurrentlyRunningFile()
     {
-        $fileName = $this->daemonizer->getThisFile();
-        $this->assertEquals(__FILE__, $fileName);
+        $fileName = $this->daemonizer->getRunningFile();
+        $this->assertRegExp('#phpunit#', $fileName);
     }
 
     /**
@@ -54,8 +54,13 @@ class DaemonizerTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetActivePid()
     {
-        $this->daemonizer->setActivePid(getmypid());
-        $this->assertEquals(getmypid(), $this->daemonizer->getActivePid());
-        $this->daemonizer->daemonize();
+        $daemonizer = $this->getMockBuilder('\Servelat\Components\Daemonizer\Daemonizer')
+            ->setConstructorArgs([tempnam('/tmp', 'servelat_')])
+            ->setMethods(['getActivePid'])
+            ->getMock()
+        ;
+        $daemonizer->expects($this->any())->method('getActivePid')->willReturn(1211111119);
+
+        $daemonizer->daemonize();
     }
 }

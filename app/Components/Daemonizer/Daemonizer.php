@@ -5,6 +5,9 @@ namespace Servelat\Components\Daemonizer;
 
 use Servelat\Base\Exceptions\ServelatException;
 
+// Needed to get the proper argv list
+ini_set('register_argc_argv', 'true');
+
 /**
  * Class Daemonizer.
  * A helper class used to daemonize
@@ -43,6 +46,10 @@ class Daemonizer
         $this->pidFile = $pidFile;
         $this->pid = getmypid();
         $this->testMode = !!$testMode;
+
+        if (!is_file($this->pidFile)) {
+            touch($pidFile);
+        }
     }
 
     /**
@@ -52,6 +59,8 @@ class Daemonizer
      */
     public function daemonize()
     {
+        global $argc, $argv;
+
         if (true === $this->daemonized) {
             throw new ServelatException('Already daemonized!');
         }
@@ -59,12 +68,13 @@ class Daemonizer
         // In parent process - return child PID
         if (0 === $this->getActivePid()) {
 
-            // If NOT runn The filename of the PID file.ing in the test mode
+            // If NOT run The filename of the PID file.ing in the test mode
             if (!$this->testMode) {
                 $cmd = sprintf(
-                    'exec %s %s &>/dev/null & echo $?',
+                    'exec %s %s %s &>/dev/null & echo $!',
                     PHP_BINARY,
-                    $this->getThisFile()
+                    $this->getRunningFile(),
+                    implode(' ', array_slice($argv, 1)) // Input arguments
                 );
                 $pid = exec($cmd);
             // Test mode
@@ -105,10 +115,10 @@ class Daemonizer
      *
      * @return string
      */
-    public function getThisFile()
+    public function getRunningFile()
     {
         $backtrace = debug_backtrace();
-        return reset($backtrace)['file'];
+        return end($backtrace)['file'];
     }
 
     /**
@@ -131,7 +141,7 @@ class Daemonizer
             $pid = 0;
         }
 
-        return $pid;
+        return (int) $pid;
     }
 
     /**

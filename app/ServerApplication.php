@@ -5,6 +5,7 @@ namespace Servelat;
 
 
 use Servelat\Base\AbstractApplication;
+use Servelat\Components\Daemonizer\DaemonizerComponent;
 use Servelat\Components\MessageBroker\MessageBrokerComponent;
 use Servelat\Components\ProcessHandlers\ProcessHandlersComponent;
 use Servelat\Components\ProcessManager\ProcessManagerComponent;
@@ -41,6 +42,7 @@ class ServerApplication extends AbstractApplication
             new ProcessManagerComponent(),
             new ProcessHandlersComponent(),
             new MessageBrokerComponent(),
+            new DaemonizerComponent(),
         ]);
 
         return $this;
