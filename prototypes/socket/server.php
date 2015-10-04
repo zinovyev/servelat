@@ -78,4 +78,3 @@ while (true) {
     socket_close($socketCli);
 }
 socket_close($socket);
-
