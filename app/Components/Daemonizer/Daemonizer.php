@@ -3,7 +3,6 @@
 
 namespace Servelat\Components\Daemonizer;
 
-use Guzzle\Common\Exception\RuntimeException;
 use Servelat\Base\Exceptions\ServelatException;
 
 /**
@@ -26,11 +25,24 @@ class Daemonizer
     protected $pidFile;
 
     /**
-     * @param string $pidFile
+     * @var bool
      */
-    public function __construct($pidFile)
+    protected $testMode = false;
+
+    /**
+     * @var bool
+     */
+    protected $daemonized = false;
+
+    /**
+     * @param string $pidFile The filename of the PID file.
+     * @param bool $testMode Set if app is currently running in the test mode or not (won't start child process in the test mode).
+     */
+    public function __construct($pidFile, $testMode = false)
     {
         $this->pidFile = $pidFile;
+        $this->pid = getmypid();
+        $this->testMode = !!$testMode;
     }
 
     /**
@@ -40,24 +52,40 @@ class Daemonizer
      */
     public function daemonize()
     {
-        // In parent process - return child PID
-        if ($this->getActivePid() === 0) {
+        if (true === $this->daemonized) {
+            throw new ServelatException('Already daemonized!');
+        }
 
-            $cmd = sprintf(
-                '%s %s &>/dev/null & echo $?',
-                PHP_BINARY,
-                $this->getCurrentlyRunningFile()
-            );
-            $pid = exec($cmd);
+        // In parent process - return child PID
+        if (0 === $this->getActivePid()) {
+
+            // If NOT runn The filename of the PID file.ing in the test mode
+            if (!$this->testMode) {
+                $cmd = sprintf(
+                    'exec %s %s &>/dev/null & echo $?',
+                    PHP_BINARY,
+                    $this->getThisFile()
+                );
+                $pid = exec($cmd);
+            // Test mode
+            } else {
+                $pid = $this->pid;
+            }
 
             if (!$this->setActivePid($pid)) {
                 throw new \RuntimeException('Failed to save child PID.');
             }
 
+            // Set 'daemonized' mark on the process
+            $this->daemonized = true;
+
             return $this->getActivePid();
 
         // In child process - return 0
-        } elseif ($this->getActivePid() === $this->getMyPid()) {
+        } elseif ($this->pid === $this->getActivePid()) {
+
+            // Set 'daemonized' mark on the process
+            $this->daemonized = true;
 
             // Become the session leader
             posix_setsid();
@@ -77,22 +105,10 @@ class Daemonizer
      *
      * @return string
      */
-    public function getCurrentlyRunningFile()
+    public function getThisFile()
     {
         $backtrace = debug_backtrace();
-        return end($backtrace)['file'];
-    }
-
-    /**
-     * @return int
-     */
-    public function getMyPid()
-    {
-        if (null === $this->pid) {
-            $this->pid = getmypid();
-        }
-
-        return $this->pid;
+        return reset($backtrace)['file'];
     }
 
     /**
