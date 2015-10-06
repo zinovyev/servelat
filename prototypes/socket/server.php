@@ -38,6 +38,8 @@ $raiseSocketError = function ($msg = '') {
     throw new \RuntimeException($msg, $code);
 };
 
+printf("Socket server prototype. Running on %s:%d\n", $address, $port);
+
 // Create socket
 if (false === $socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP)) {
     $raiseSocketError('Could not create socket.');
@@ -53,28 +55,37 @@ if (false === socket_listen($socket, 5)) {
 
 // Waiting on the new connection
 while (true) {
-    if (false === $socketCli = socket_accept($socket)) {
-        $raiseSocketError('Socket accept failed.');
-    }
 
-    $hi = 'foo';
-    if (false === socket_write($socketCli, $hi, strlen($hi))) {
-        $raiseSocketError('Failed to write to socket.');
-    }
+    // Build read streams
+    $read = array_merge([$socket], $clients);
+    $write = $except = null;
 
-    // Waiting on some input
-    while (true) {
-        if (false === ($buf = socket_read($socketCli, 2048, PHP_NORMAL_READ))) {
-            $raiseSocketError('Failed to read the input values.');
+    // Run system select
+    // Set up a blocking call to socket_select
+    if(false !== $num = socket_select($read, $write, $except, 0, 500)) {
+
+        // Got new connection - register new client
+        if (in_array($socket, $read)) {
+            if (false === $clients[] = socket_accept($socket)) {
+                $raiseSocketError('Failed to accept a connection from client.');
+            }
         }
 
-        // No input available
-        if ("" === $buf = trim($buf)) {
-            continue;
-        }
+        // Handle input values
+        foreach ($clients as $key => $client) {
+            if (in_array($client, $read)) {
 
-        echo $buf;
+                if (false === $buf = socket_read($client, 2048, PHP_NORMAL_READ)) {
+                    $raiseSocketError('Could not read from socket!');
+                } elseif ("" === $buf = trim($buf)) {
+                    continue;
+                } else {
+                    socket_write($client, strtoupper($buf), strlen($buf));
+                }
+
+            }
+        }
     }
-    socket_close($socketCli);
+
 }
-socket_close($socket);
+socket_close($socketCli); socket_close($socket);
