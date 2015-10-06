@@ -11,5 +11,5 @@ namespace Servelat\Components\SocketServer;
  */
 class SocketServer
 {
-    protected $socket;
+    protected $socket;zz
 }
